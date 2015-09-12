@@ -20,20 +20,23 @@ public class Prompter {
     }
 
     private void loadCensoredWords() {
-        mCensoredWords = new HashSet<String>();
+        mCensoredWords = new HashSet<>();
         Path file = Paths.get("resources", "censored_words.txt");
         List<String> words = null;
+
         try {
             words = Files.readAllLines(file);
         } catch (IOException e) {
             System.out.println("Couldn't load censored words");
             e.printStackTrace();
         }
+
         mCensoredWords.addAll(words);
     }
 
-    public void run(Template tmpl) {
+    public List<String> run(Template tmpl) {
         List<String> results = null;
+
         try {
             results = promptForWords(tmpl);
         } catch (IOException e) {
@@ -41,7 +44,8 @@ public class Prompter {
             e.printStackTrace();
             System.exit(0);
         }
-        // TODO:csd - Print out the results that were gathered here by rendering the template
+
+        return results;
     }
 
     /**
@@ -52,11 +56,13 @@ public class Prompter {
      * @throws IOException
      */
     public List<String> promptForWords(Template tmpl) throws IOException {
-        List<String> words = new ArrayList<String>();
+        List<String> words = new ArrayList<>();
+
         for (String phrase : tmpl.getPlaceHolders()) {
             String word = promptForWord(phrase);
             words.add(word);
         }
+
         return words;
     }
 
@@ -67,8 +73,19 @@ public class Prompter {
      * @param phrase The word that the user should be prompted.  eg: adjective, proper noun, name
      * @return What the user responded
      */
-    public String promptForWord(String phrase) {
-        // TODO:csd - Prompt the user for the response to the phrase, make sure the word is censored, loop until you get a good response.
-        return "";
+    public String promptForWord(String phrase) throws IOException {
+        String answer = null;
+
+        while (null == answer) {
+            System.out.printf("Enter %s: ", phrase);
+            answer = mReader.readLine();
+
+            if (mCensoredWords.contains(answer)) {
+                System.out.println("Censored word enter. Please try again.");
+                answer = null;
+            }
+        }
+
+        return answer;
     }
 }

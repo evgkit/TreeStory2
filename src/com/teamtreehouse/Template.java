@@ -20,11 +20,14 @@ public class Template {
         // Match on double underscore surrounded words, like __name__ or __proper noun__
         Pattern pattern = Pattern.compile("__([^__]+)__");
         Matcher matcher = pattern.matcher(text);
-        mPlaceholders = new ArrayList<String>();
+
+        mPlaceholders = new ArrayList<>();
+
         while (matcher.find()) {
             String label = matcher.group(1);
             mPlaceholders.add(label);
         }
+
         mCompiled = matcher.replaceAll("%s");
     }
 
